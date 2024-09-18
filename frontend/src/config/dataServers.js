@@ -8,10 +8,20 @@ const dataServers = {
     containers: {
       pod: {
         'vcard:Individual': ['/vcard/individual'],
-        'as:Event': ['/as/event']
+        'as:Event': ['/as/event'],
+        'as:Article': ['/as/article']
       }
     },
     uploadsContainer: '/semapps/file'
+  },
+  app: {
+    baseUrl: 'http://localhost:3001',
+    sparqlEndpoint: 'http://localhost:3001/sparql',
+    containers: {
+      app: {
+        'skos:Concept': ['/skos/concept']
+      }
+    }
   }
 };
 

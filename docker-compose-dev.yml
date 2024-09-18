@@ -16,6 +16,8 @@ services:
       - fuseki
       - redis
     restart: always
+    ports:
+      - "3000:3000"
     expose:
       - "3000"
     volumes:

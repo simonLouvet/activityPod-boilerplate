@@ -21,7 +21,10 @@ upgrade:
 	$(DOCKER_COMPOSE_DEV) up -d
 
 logs-activitypods:
-	$(DOCKER_COMPOSE_DEV) logs activitypods-backend
+	$(DOCKER_COMPOSE_DEV) logs -f activitypods-backend
+
+logs-app:
+	$(DOCKER_COMPOSE_DEV) logs activitypods-frontend
 
 attach-activitypods:
 	$(DOCKER_COMPOSE_DEV) exec activitypods-backend pm2 attach 0
