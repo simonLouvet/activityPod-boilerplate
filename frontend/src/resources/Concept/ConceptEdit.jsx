@@ -1,10 +1,11 @@
 import React from 'react';
-import { Edit } from 'react-admin';
-import ConceptForm from './ConceptForm';
+import { Edit, SimpleForm, TextInput, required } from 'react-admin';
 
 const ConceptEdit = () => (
   <Edit>
-    <ConceptForm />
+    <SimpleForm>
+      <TextInput source="skos:prefLabel" fullWidth validate={[required()]} />
+    </SimpleForm>
   </Edit>
 );
 

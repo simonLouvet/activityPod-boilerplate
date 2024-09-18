@@ -19,7 +19,8 @@ const dataServers = {
     sparqlEndpoint: 'http://localhost:3001/sparql',
     containers: {
       app: {
-        'skos:Concept': ['/skos/concept']
+        'skos:Concept': ['/skos/concept'],
+        'as:Article' : ['/as/article']
       }
     }
   }

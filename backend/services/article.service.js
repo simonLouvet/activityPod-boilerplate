@@ -1,16 +1,16 @@
 const { ControlledContainerMixin } = require('@semapps/ldp');
 
 module.exports = {
-  name: 'taxonomy',
+  name: 'article',
   mixins: [ControlledContainerMixin],
   settings: {
     // path: '/taxonomy',
-    acceptedTypes: ['skos:Concept']
+  acceptedTypes: ['as:Article']
   },
   permissions: {
     anon: {
       read: true,
-      write: false,
+      write: true,
     },
     anyUser: {
       read: true,
