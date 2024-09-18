@@ -19,13 +19,17 @@ export default {
     en: {
       name: 'Offer |||| Offers',
       fields: {
-        'dc:created': 'creation date'
+        'dc:created': 'creation date',
+        'as:tag': 'topic',
+        'name': 'title'
       }
     },
     fr: {
       name: 'Offre |||| Offres',
       fields: {
-        'dc:created': "Date de création"
+        'dc:created': "date de création",
+        'as:tag': 'theme',
+        'name': 'titre'
       }
     }
   }
