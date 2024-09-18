@@ -58,6 +58,14 @@ module.exports = {
         },
         labelPredicate: 'vcard:given-name',
         openEndpoint: urlJoin(CONFIG.FRONT_URL, '/r')
+      },
+      'as:Article': {
+        label: {
+          en: 'Offers',
+          fr: 'Offres'
+        },
+        labelPredicate: 'as:name',
+        openEndpoint: urlJoin(CONFIG.FRONT_URL, '/r')
       }
     },
     queueServiceUrl: CONFIG.QUEUE_SERVICE_URL
