@@ -26,7 +26,7 @@ module.exports = {
         },
         {
           registeredClass: 'as:Article',
-          accessMode: ['acl:Read', 'acl:Write']
+          accessMode: ['acl:Read', 'acl:Write','acl:Control']
         },
         {
           registeredClass: 'vcard:Individual',
