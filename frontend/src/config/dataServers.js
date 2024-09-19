@@ -20,7 +20,7 @@ const dataServers = {
     containers: {
       app: {
         'skos:Concept': ['/skos/concept'],
-        'as:Article' : ['/as/article']
+        'as:Article': ['/as/article']
       }
     }
   }

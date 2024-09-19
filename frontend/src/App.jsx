@@ -8,6 +8,8 @@ import i18nProvider from './config/i18nProvider';
 import ontologies from './config/ontologies.json';
 import Layout from './Layout';
 import * as resources from './resources';
+import OffersPage from './pages/Offers';
+import theme from './theme';
 
 // If a custom Pod provider is defined, use it instead of loading all available Pod providers
 const LoginPage = props => (
@@ -32,12 +34,16 @@ const App = () => (
       layout={Layout}
       store={memoryStore()}
       requireAuth
+      theme={theme}
     >
       {Object.entries(resources).map(([key, resource]) => (
         <Resource key={key} name={key} {...resource.config} />
       ))}
       <CustomRoutes noLayout>
         <Route path="/r" element={<RedirectPage ontologies={ontologies} />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path="/public-offers" element={<OffersPage />} />
       </CustomRoutes>
     </Admin>
   </BrowserRouter>

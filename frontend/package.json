@@ -17,8 +17,8 @@
     "unlink-packages": "yalc remove --all && rm -rf node_modules/@semapps && rm -rf node_modules/@activitypods && yarn install --force"
   },
   "dependencies": {
-    "@mui/styles": "^5.0.2",
     "@activitypods/react": "2.0.0-alpha.16",
+    "@mui/styles": "^5.0.2",
     "@semapps/activitypub-components": "0.8.1",
     "@semapps/auth-provider": "0.8.1",
     "@semapps/date-components": "^0.8.1",
@@ -27,6 +27,7 @@
     "@semapps/input-components": "0.8.1",
     "@semapps/list-components": "0.8.1",
     "@semapps/semantic-data-provider": "0.8.1",
+    "luxon": "^3.5.0",
     "ra-language-english": "^4.11.0",
     "ra-language-french": "^4.11.0",
     "react": "^18.2.0",
