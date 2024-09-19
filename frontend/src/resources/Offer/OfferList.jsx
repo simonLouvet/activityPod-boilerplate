@@ -1,5 +1,6 @@
 import React from 'react';
 import { List, SimpleList, useGetIdentity, useListContext, ListContextProvider } from 'react-admin';
+import {Typography } from '@mui/material';
 
 const OfferListContent = props => {
   const { data: user, isPending, error } = useGetIdentity();
@@ -19,6 +20,7 @@ const OfferList = () => {
       // <List  filter={[{field: 'http://purl.org/dc/terms/creator', operator: '!=', value: data.id}]} sort={{ field: 'vcard:given-name', order: 'ASC' }} perPage={1000}>
       // <List sort={{ field: 'vcard:given-name', order: 'ASC' }} perPage={1000}>
       <>
+        <Typography variant={'h4'}>My Offers</Typography>
         <List
           filter={{ 'http://purl.org/dc/terms/creator': user.id }}
           sort={{ field: 'vcard:given-name', order: 'ASC' }}
@@ -26,6 +28,7 @@ const OfferList = () => {
         >
           <SimpleList primaryText={record => record.name} linkType="show" />
         </List>
+        <Typography variant={'h4'}>Shared with me</Typography>
         <List sort={{ field: 'vcard:given-name', order: 'ASC' }} perPage={1000}>
           <OfferListContent>
             <SimpleList primaryText={record => record.name} linkType="show" />
