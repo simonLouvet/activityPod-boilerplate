@@ -1,8 +1,8 @@
-import { Paper, Chip, Typography, Box, Button } from '@mui/material';
+import { Paper, Chip, Typography, Box } from '@mui/material';
 import { DateTime } from 'luxon';
 
 const OfferCard = props => {
-  const { offer, tags } = props;
+  const { offer, tags, Actions = null } = props;
   const tag = tags?.find(tag => tag.id === offer['as:tag'])?.['skos:prefLabel'];
   const datetime = offer['dc:created'] ? DateTime.fromISO(offer['dc:created']) : '';
 
@@ -10,7 +10,7 @@ const OfferCard = props => {
     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', rowGap: '1rem' }}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h4">{offer.name}</Typography>
-        <Chip color="secondary" label={tag} />
+        <Chip color="primary" label={tag} />
       </Box>
       <Typography>
         <strong>Créée par </strong>
@@ -20,9 +20,7 @@ const OfferCard = props => {
         <strong>Le </strong>
         {datetime?.toLocaleString(DateTime.DATETIME_SHORT)}
       </Typography>
-      <Box display="flex" justifyContent="flex-end">
-        <Button variant="contained">Je le veux !</Button>
-      </Box>
+      {Actions && <Actions />}
     </Paper>
   );
 };

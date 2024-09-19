@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useGetList } from 'react-admin';
-import { Grid, Box, TextField, Paper, Typography } from '@mui/material';
+import { Grid, Box, TextField, Paper, Typography, Button } from '@mui/material';
 import OfferCard from '../components/OfferCard';
 import { useMemo } from 'react';
 import TagsSelector from '../components/TagsSelector';
@@ -8,8 +8,6 @@ import TagsSelector from '../components/TagsSelector';
 const OffersPage = () => {
   const { data: offers = [] } = useGetList('Offer');
   const { data: tags = [] } = useGetList('Concept');
-
-  console.log({ offers, tags });
 
   const [textFilter, setTextFilter] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
@@ -23,7 +21,7 @@ const OffersPage = () => {
   );
 
   return (
-    <Box p={4}>
+    <Box p={4} bgcolor="#90CAF9" minHeight="100vh">
       <Paper sx={{ px: 2, py: 1, mb: 4 }}>
         <Typography variant="h3" sx={{ my: 1, mb: 2 }}>
           Offres publiques
@@ -42,10 +40,27 @@ const OffersPage = () => {
       </Paper>
       <Grid container spacing={2}>
         {filteredOffers?.map(offer => (
-          <Grid item xs={4} key={offer.id}>
-            <OfferCard offer={offer} tags={tags} />
+          <Grid item xs={12} md={6} lg={4} xl={3} key={offer.id}>
+            <OfferCard
+              offer={offer}
+              tags={tags}
+              Actions={() => (
+                <Box display="flex" justifyContent="flex-end">
+                  <Button variant="contained" color="secondary">
+                    Je le veux !
+                  </Button>
+                </Box>
+              )}
+            />
           </Grid>
         ))}
+        {filteredOffers?.length === 0 && (
+          <Grid item xs={12} sx={{ textAlign: 'center' }}>
+            <Typography variant="overline" fontSize={16} color="white">
+              Aucune offre ne correspond
+            </Typography>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

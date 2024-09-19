@@ -1,22 +1,33 @@
-import React from 'react';
-import { Show, SimpleShowLayout, TextField, DateField, TopToolbar, EditButton } from 'react-admin';
-import {ReferenceField} from '@semapps/field-components';
+import { Show, useRecordContext, useGetList } from 'react-admin';
+import { Box } from '@mui/material';
 import { ShareButton } from '@activitypods/react';
-// import JoinButton from '../../common/buttons/JoinButton';
+import OfferCard from '../../components/OfferCard';
 
+const OfferRecordCard = () => {
+  const record = useRecordContext();
+  const { data: tags = [] } = useGetList('Concept');
 
+  if (!record) return null;
 
-const EventShow = () => (
-  <Show actions={<ShareButton profileResource={'Contact'}/>}>
+  return (
+    <OfferCard
+      offer={record}
+      tags={tags}
+      Actions={() => (
+        <Box display="flex" justifyContent="flex-end">
+          <ShareButton profileResource={'Contact'} />
+        </Box>
+      )}
+    />
+  );
+};
 
-
-    <SimpleShowLayout>
-      <TextField source="name" />
-      <ReferenceField source="as:tag" reference="Concept">
-        <TextField source="skos:prefLabel" />
-      </ReferenceField>
-    </SimpleShowLayout>
-  </Show>
-);
+const EventShow = props => {
+  return (
+    <Show>
+      <OfferRecordCard />
+    </Show>
+  );
+};
 
 export default EventShow;
