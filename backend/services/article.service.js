@@ -5,16 +5,17 @@ module.exports = {
   mixins: [ControlledContainerMixin],
   settings: {
     // path: '/taxonomy',
-  acceptedTypes: ['as:Article']
-  },
-  permissions: {
-    anon: {
-      read: true,
-      write: true,
+    permissions: {
+      anon: {
+        read: true,
+        write: true,
+      },
+      anyUser: {
+        read: true,
+        write: true,
+      }
     },
-    anyUser: {
-      read: true,
-      write: true,
-    }
-  }
+    acceptedTypes: ['as:Article']
+  },
+
 }
