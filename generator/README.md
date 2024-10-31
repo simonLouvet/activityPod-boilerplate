@@ -36,8 +36,6 @@ Follow these steps to get started with the Fake Data Generator:
    npm install
    ```
 
-5. **Check the generated data**: You can view the data directly in your terminal or access it via **Jena Fuseki** at `localhost:3030`.
-
 ## Usage
 
 1. **Configuration**: For now, the data in json file in the "data" folder. You can customize them but **don't forget to change the NUM_PODS variable in the generate.js file**.
@@ -47,7 +45,7 @@ Follow these steps to get started with the Fake Data Generator:
    npm run generator
    ```
 
-The data defined in `generate.js` will be injected into the configured environment.
+5. **Check the generated data**: You can view the data directly in your terminal or access it via **Jena Fuseki** at `localhost:3030`.
 
 ## 🛠️ Contributing
 
