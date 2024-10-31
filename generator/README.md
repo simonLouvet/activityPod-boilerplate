@@ -41,19 +41,8 @@ Follow these steps to get started with the Fake Data Generator:
 
 ## Usage
 
-1. **Configuration**: For now, the data to be injected is hard-coded in the `generate.js` file. You can customize it by modifying the content like this:
-
-   ```js
-   // Example data to inject
-   const actorData = {
-     username: 'colin',
-     email: 'colin@test.com',
-     password: 'test',
-     name: 'colin',
-     'schema:knowsLanguage': 'en'
-   };
-   ```
-
+1. **Configuration**: For now, the data in json file in the "data" folder. You can customize them but **don't forget to change the NUM_PODS variable in the generate.js file**.
+  
 2. **Run the Generator**:
    ```bash
    npm run generator
@@ -63,7 +52,7 @@ The data defined in `generate.js` will be injected into the configured environme
 
 ## 🛠️ Contributing
 
-Currently, this generator only creates a single profile, but it could be extended to generate multiple profiles connected by relationships, with resources for each profile and varying levels of sharing based on ActivityPods principles. Contributions to expand these capabilities are very welcome!
+Currently, this generator only creates some profile, but it could be extended to generate multiple profiles connected by relationships, with resources for each profile and varying levels of sharing based on ActivityPods principles. Contributions to expand these capabilities are very welcome!
 
 ## 🌍 Community & Support
 
