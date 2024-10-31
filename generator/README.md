@@ -20,7 +20,6 @@ Follow these steps to get started with the Fake Data Generator:
 
 1. **Switch to the development branch for the generator**:
    ```bash
-   git clone https://github.com/activitypods/app-boilerplate.git
    git fetch origin data-generator
    git checkout data-generator
    ```
