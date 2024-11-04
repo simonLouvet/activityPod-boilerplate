@@ -1,3 +1,4 @@
+const { ACTIVITY_TYPES } = require('@semapps/activitypub');
 const { ServiceBroker } = require('moleculer');
 const CONFIG = require('./config');
 const RdfJSONSerializer = require('./RdfJSONSerializer.js');
@@ -30,8 +31,8 @@ const connectPodProvider = async () => {
 // find in tests/pods-creation.test.js
 //https://developer.mozilla.org/en-US/docs/Glossary/IIFE
 (async () => {
-  const NUM_PODS = 4;
-  podProvider = await connectPodProvider();
+  const NUM_PODS = 2;
+  const podProvider = await connectPodProvider();
   const actors = [];
   for (let i = 1; i <= NUM_PODS; i++) {
     const actorData = require(`./data/actor${i}.json`);
@@ -55,5 +56,30 @@ const connectPodProvider = async () => {
     console.log(actors[i]);
 
   }
+
+  const nick = actors[1];
+  const anastasia = actors[2];
+
+  const contactRequestToAnastasia = await nick.call('activitypub.outbox.post', {
+    collectionUri: nick.outbox,
+    type: ACTIVITY_TYPES.OFFER,
+    actor: nick.id,
+    object: {
+      type: ACTIVITY_TYPES.ADD,
+      object: nick.url
+    },
+    content: 'Hey Anastasia, do you remember me ?',
+    target: anastasia.id,
+    to: anastasia.id
+  });
+
+  await anastasia.call('activitypub.outbox.post', {
+    collectionUri: anastasia.outbox,
+    type: ACTIVITY_TYPES.ACCEPT,
+    actor: anastasia.id,
+    object: contactRequestToAnastasia.id,
+    to: nick.id
+  });
+
   return actors;
 })();
