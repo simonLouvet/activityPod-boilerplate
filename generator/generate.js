@@ -3,6 +3,7 @@ const { ServiceBroker } = require('moleculer');
 const Redis = require('ioredis');
 const CONFIG = require('./config');
 const RdfJSONSerializer = require('./RdfJSONSerializer.js');
+const NUM_PODS = 2;
 
 // Create a ServiceBroker
 //find in activitypods/tests/initialize.js
@@ -211,7 +212,7 @@ const clearAllData = async (podProvider) => {
 //     await clearRedisDb(CONFIG.QUEUE_SERVICE_URL);
 //     await clearRedisDb(CONFIG.REDIS_OIDC_PROVIDER_URL);
 //     await clearMails();
-    
+
 //     console.log('Nettoyage terminé');
 //   } catch (error) {
 //     console.error('Erreur lors du nettoyage:', error);
@@ -219,59 +220,64 @@ const clearAllData = async (podProvider) => {
 // };
 
 // find in tests/pods-creation.test.js
+async function createPods(podProvider) {
+  const actors = [];
+  for (let i = 1; i <= NUM_PODS; i++) {
+    const actorData = require(`./data/actor${i}.json`);
+    const { webId } = await podProvider.call('auth.signup', actorData);
+
+    actors[i] = await podProvider.call(
+      'activitypub.actor.awaitCreateComplete',
+      {
+        actorUri: webId,
+        additionalKeys: ['url'],
+        maxTries: 30
+      },
+      { meta: { dataset: actorData.username } }
+    );
+    // use podprovide authentified as actors[i]
+    actors[i].call = (actionName, params, options = {}) =>
+      podProvider.call(actionName, params, {
+        ...options,
+        meta: { ...options.meta, webId, dataset: actors[i].preferredUsername }
+      });
+    // console.log(actors[i]);
+  }
+
+  const nick = actors[1];
+  const anastasia = actors[2];
+
+  const contactRequestToAnastasia = await nick.call('activitypub.outbox.post', {
+    collectionUri: nick.outbox,
+    type: ACTIVITY_TYPES.OFFER,
+    actor: nick.id,
+    object: {
+      type: ACTIVITY_TYPES.ADD,
+      object: nick.url
+    },
+    content: 'Hey Anastasia, do you remember me ?',
+    target: anastasia.id,
+    to: anastasia.id
+  });
+
+  const contactRequestAcceptedByAnastasia = await anastasia.call('activitypub.outbox.post', {
+    collectionUri: anastasia.outbox,
+    type: ACTIVITY_TYPES.ACCEPT,
+    actor: anastasia.id,
+    object: contactRequestToAnastasia.id,
+    to: nick.id
+  });
+
+  console.log('contactRequestToAnastasia', contactRequestToAnastasia);
+  console.log('contactRequestAcceptedByAnastasia', contactRequestAcceptedByAnastasia);
+  return actors;
+}
+
 //https://developer.mozilla.org/en-US/docs/Glossary/IIFE
 (async () => {
-  const NUM_PODS = 2;
+  let actors = []
   const podProvider = await connectPodProvider();
   await clearAllData(podProvider);
-  // const actors = [];
-  // for (let i = 1; i <= NUM_PODS; i++) {
-  //   const actorData = require(`./data/actor${i}.json`);
-  //   const { webId } = await podProvider.call('auth.signup', actorData);
-
-  //   actors[i] = await podProvider.call(
-  //     'activitypub.actor.awaitCreateComplete',
-  //     {
-  //       actorUri: webId,
-  //       additionalKeys: ['url'],
-  //       maxTries: 30
-  //     },
-  //     { meta: { dataset: actorData.username } }
-  //   );
-  //   // use podprovide authentified as actors[i]
-  //   actors[i].call = (actionName, params, options = {}) =>
-  //     podProvider.call(actionName, params, {
-  //       ...options,
-  //       meta: { ...options.meta, webId, dataset: actors[i].preferredUsername }
-  //     });
-  //   // console.log(actors[i]);
-  // }
-
-  // const nick = actors[1];
-  // const anastasia = actors[2];
-
-  // const contactRequestToAnastasia = await nick.call('activitypub.outbox.post', {
-  //   collectionUri: nick.outbox,
-  //   type: ACTIVITY_TYPES.OFFER,
-  //   actor: nick.id,
-  //   object: {
-  //     type: ACTIVITY_TYPES.ADD,
-  //     object: nick.url
-  //   },
-  //   content: 'Hey Anastasia, do you remember me ?',
-  //   target: anastasia.id,
-  //   to: anastasia.id
-  // });
-
-  // const contactRequestAcceptedByAnastasia = await anastasia.call('activitypub.outbox.post', {
-  //   collectionUri: anastasia.outbox,
-  //   type: ACTIVITY_TYPES.ACCEPT,
-  //   actor: anastasia.id,
-  //   object: contactRequestToAnastasia.id,
-  //   to: nick.id
-  // });
-
-  // console.log('contactRequestToAnastasia', contactRequestToAnastasia);
-  // console.log('contactRequestAcceptedByAnastasia', contactRequestAcceptedByAnastasia);
-  // return actors;
+  // actors = await createPods(podProvider);
+  return actors;
 })();
