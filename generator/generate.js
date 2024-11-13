@@ -30,8 +30,6 @@ const connectPodProvider = async () => {
   return broker;
 };
 
-
-
 const listDatasets = async () => {
   const response = await fetch(`${CONFIG.SPARQL_ENDPOINT}$/datasets`, {
     headers: {
@@ -77,150 +75,32 @@ const clearRedisDb = async redisUrl => {
   redisClient.disconnect();
 };
 
-// const clearAllData = async () => {
-//   try {
-//     const datasets = await listDatasets();
-//     console.log('Datasets trouvés:', datasets);
-
-//     for (let dataset of datasets) {
-//       const response = await clearDataset(dataset);
-//       if (!response.ok) {
-//         const text = await response.text();
-//         console.error(`Erreur lors du nettoyage du dataset ${dataset}:`, text);
-//       } else {
-//         console.log("Ce jeu a été supprimé : ", dataset)
-//         console.log("La réponse était : ", response)
-//       }
-//     }
-
-//     await clearRedisDb(CONFIG.QUEUE_SERVICE_URL);
-//     await clearRedisDb(CONFIG.REDIS_OIDC_PROVIDER_URL);
-
-//     await clearMails();
-//     console.log('Nettoyage terminé');
-//   } catch (error) {
-//     console.error('Erreur lors du nettoyage:', error);
-//   }
-// };
-
 const clearAllData = async (podProvider) => {
   try {
-    const nickID = 'http://localhost:3000/anastasia3'
-    const nick = await podProvider.call('auth.account.findByWebId', {webId: nickID})
+    const datasets = await listDatasets();
 
-    nick.call = (actionName, params, options = {}) =>
-      podProvider.call(actionName, params, {
-        ...options,
-        meta: { ...options.meta, webId: "system", dataset: "anastasia3" }
-      });
-
-      const res = await nick.call('auth.login', {username: "anastasia3", password: "test" })
-    
-      nick.token = res.token
-      console.log("nick", nick)
-
-      const response = await nick.call("management.deleteActor", {
-            actorUri: nickID,
-            iKnowWhatImDoing: true
-          }
-        )
-        console.log("response", response)
-
-    // const datasets = await listDatasets();
-    // console.log('Datasets trouvés:', datasets);
-
-// TRY TO LOG AS SYSTEM
-  //   const system = await podProvider.call('auth.account.findByWebId', {webId: 'system'})
-  //   console.log("sysem", system)
-
-  //   system.call = (actionName, params, options = {}) =>
-  //     podProvider.call(actionName, params, {
-  //       ...options,
-  //       meta: { ...options.meta, system, dataset: system.preferredUsername }
-  //     });
-
-
-  //   const response = await system.call("management.deleteActor", {
-  //     webId: 'system',
-  //     actorUri: "http://localhost:3000/nick2",
-  //     iKnowWhatImDoing: true
-  //   }
-  // )
-  // console.log("response", response)
-
-
-  // TRY YO LOG AS USER
-  //     const system = await podProvider.call('auth.account.findByWebId', {webId: 'system'})
-  //   console.log("sysem", system)
-
-  //   system.call = (actionName, params, options = {}) =>
-  //     podProvider.call(actionName, params, {
-  //       ...options,
-  //       meta: { ...options.meta, system, dataset: system.preferredUsername }
-  //     });
-
-
-  //   const response = await system.call("management.deleteActor", {
-  //     webId: 'system',
-  //     actorUri: "http://localhost:3000/nick2",
-  //     iKnowWhatImDoing: true
-  //   }
-  // )
-  // console.log("response", response)
-
-    // for (let dataset of datasets) {
-    //   await podProvider.call("management.deleteActor",   )
-    // }
-
-
-    // for (let dataset of datasets) {
-    //   const response = await clearDataset(dataset);
-    //   if (!response.ok) {
-    //     const text = await response.text();
-    //     console.error(`Erreur lors du nettoyage du dataset ${dataset}:`, text);
-    //   } else {
-    //     console.log("Ce jeu a été supprimé : ", dataset)
-    //     console.log("La réponse était : ", response)
-    //   }
-    // }
+    for (let dataset of datasets) {
+      if(dataset !== CONFIG.MAIN_DATASET && dataset !== CONFIG.AUTH_ACCOUNTS_DATASET_NAME && dataset !== "settings") {
+        // ugly fix => We should open an issue to say that pods'data folder isn't deleted even if jena is clean
+        //https://github.com/assemblee-virtuelle/semapps/blob/master/src/middleware/packages/triplestore/subservices/dataset.js#L118
+        await manualDeletion(dataset)
+        await deleteDataset(podProvider, dataset)
+      }      
+    }
 
     await clearRedisDb(CONFIG.QUEUE_SERVICE_URL);
     await clearRedisDb(CONFIG.REDIS_OIDC_PROVIDER_URL);
-
     await clearMails();
+
     console.log('Nettoyage terminé');
   } catch (error) {
     console.error('Erreur lors du nettoyage:', error);
   }
 };
 
-//TODO : ouvrir issue  : efface config mais pas la database
-//https://github.com/assemblee-virtuelle/semapps/blob/master/src/middleware/packages/triplestore/subservices/dataset.js#L118
-// const clearAllData = async (provider) => {
-//   try {
-//     const datasets = await listDatasets();
-//     console.log('Datasets trouvés:', datasets);
-
-//     for (let dataset of datasets) {
-//       try {
-//         await deleteDataset(provider, dataset);
-//       } catch (e) {
-//         console.log(e);
-//       }
-//     }
-
-//     await clearRedisDb(CONFIG.QUEUE_SERVICE_URL);
-//     await clearRedisDb(CONFIG.REDIS_OIDC_PROVIDER_URL);
-//     await clearMails();
-
-//     console.log('Nettoyage terminé');
-//   } catch (error) {
-//     console.error('Erreur lors du nettoyage:', error);
-//   }
-// };
-
 // find in tests/pods-creation.test.js
 async function createPods(podProvider) {
+  console.log("we enter in")
   const actors = [];
   for (let i = 1; i <= NUM_PODS; i++) {
     const actorData = require(`./data/actor${i}.json`);
@@ -241,7 +121,7 @@ async function createPods(podProvider) {
         ...options,
         meta: { ...options.meta, webId, dataset: actors[i].preferredUsername }
       });
-    // console.log(actors[i]);
+    console.log(actors[i]);
   }
 
   const nick = actors[1];
@@ -273,11 +153,28 @@ async function createPods(podProvider) {
   return actors;
 }
 
+// Manage manually the data deletion
+async function manualDeletion(dataset) {
+  const { exec } = require("child_process");
+
+  exec(`cd ../data/fuseki/database | ls | grep ${dataset}`, (error, stdout, stderr) => {
+      if (error) {
+          console.error(`Erreur : ${error.message}`);
+          return;
+      }
+      if (stderr) {
+          console.error(`Erreur standard : ${stderr}`);
+          return;
+      }
+      console.log(`Sortie : ${stdout}`);
+  });
+}
+
 //https://developer.mozilla.org/en-US/docs/Glossary/IIFE
 (async () => {
   let actors = []
   const podProvider = await connectPodProvider();
-  await clearAllData(podProvider);
-  // actors = await createPods(podProvider);
+  // await clearAllData(podProvider);
+  actors = await createPods(podProvider);
   return actors;
 })();

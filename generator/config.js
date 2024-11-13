@@ -17,5 +17,7 @@ module.exports = {
   SMTP_PORT: parseInt(process.env.SEMAPPS_SMTP_PORT, 10),
   SMTP_SECURE: process.env.SEMAPPS_SMTP_SECURE === 'true',
   SMTP_USER: process.env.SEMAPPS_SMTP_USER,
-  SMTP_PASS: process.env.SEMAPPS_SMTP_PASS
+  SMTP_PASS: process.env.SEMAPPS_SMTP_PASS,
+  MAIN_DATASET: process.env.SEMAPPS_MAIN_DATASET,
+  AUTH_ACCOUNTS_DATASET_NAME: process.env.SEMAPPS_AUTH_ACCOUNTS_DATASET_NAME
 };
