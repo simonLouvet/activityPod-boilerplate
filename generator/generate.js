@@ -23,9 +23,17 @@ const connectPodProvider = async () => {
   });
 
   await broker.start();
+  console.log('Broker démarré.');
+  // console.log('Liste des services enregistrés : ', broker.registry.getServiceList());
 
   // If the service is available, it means we are connected to the Pod provider broker
-  await broker.waitForServices(['ldp']);
+  try {
+    await broker.waitForServices(['ldp']);
+    console.log("Service 'ldp' disponible !");
+  } catch (err) {
+    console.error("Timeout : Le service 'ldp' n'est pas disponible.");
+  }
+  // await broker.waitForServices(['ldp']);
 
   return broker;
 };
@@ -50,11 +58,11 @@ const clearMails = async () => {
   });
 };
 
-const deleteDataset = async (podprovider,dataset) => {
+const deleteDataset = async (podprovider, dataset) => {
   await podprovider.call('triplestore.dataset.delete', {
     dataset,
     iKnowWhatImDoing: true
-  })
+  });
 };
 
 // const clearDataset = async dataset => {
@@ -75,17 +83,17 @@ const clearRedisDb = async redisUrl => {
   redisClient.disconnect();
 };
 
-const clearAllData = async (podProvider) => {
+const clearAllData = async podProvider => {
   try {
     const datasets = await listDatasets();
 
     for (let dataset of datasets) {
-      if(dataset !== CONFIG.MAIN_DATASET && dataset !== CONFIG.AUTH_ACCOUNTS_DATASET_NAME && dataset !== "settings") {
+      if (dataset !== CONFIG.MAIN_DATASET && dataset !== CONFIG.AUTH_ACCOUNTS_DATASET_NAME && dataset !== 'settings') {
         // ugly fix => We should open an issue to say that pods'data folder isn't deleted even if jena is clean
         //https://github.com/assemblee-virtuelle/semapps/blob/master/src/middleware/packages/triplestore/subservices/dataset.js#L118
-        await manualDeletion(dataset)
-        await deleteDataset(podProvider, dataset)
-      }      
+        await manualDeletion(dataset);
+        await deleteDataset(podProvider, dataset);
+      }
     }
 
     await clearRedisDb(CONFIG.QUEUE_SERVICE_URL);
@@ -100,7 +108,7 @@ const clearAllData = async (podProvider) => {
 
 // find in tests/pods-creation.test.js
 async function createPods(podProvider) {
-  console.log("we enter in")
+  console.log('we enter in');
   const actors = [];
   for (let i = 1; i <= NUM_PODS; i++) {
     const actorData = require(`./data/actor${i}.json`);
@@ -155,24 +163,24 @@ async function createPods(podProvider) {
 
 // Manage manually the data deletion
 async function manualDeletion(dataset) {
-  const { exec } = require("child_process");
+  const { exec } = require('child_process');
 
   exec(`cd ../data/fuseki/database | ls | grep ${dataset}`, (error, stdout, stderr) => {
-      if (error) {
-          console.error(`Erreur : ${error.message}`);
-          return;
-      }
-      if (stderr) {
-          console.error(`Erreur standard : ${stderr}`);
-          return;
-      }
-      console.log(`Sortie : ${stdout}`);
+    if (error) {
+      console.error(`Erreur : ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Erreur standard : ${stderr}`);
+      return;
+    }
+    console.log(`Sortie : ${stdout}`);
   });
 }
 
 //https://developer.mozilla.org/en-US/docs/Glossary/IIFE
 (async () => {
-  let actors = []
+  let actors = [];
   const podProvider = await connectPodProvider();
   // await clearAllData(podProvider);
   actors = await createPods(podProvider);
